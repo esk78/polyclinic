@@ -1,0 +1,2 @@
+class DoctorCategory < ApplicationRecord
+end

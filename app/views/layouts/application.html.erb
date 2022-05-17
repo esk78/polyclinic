@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Polyclinic</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <%= link_to "Polyclinic", root_path, class: "navbar-brand" %>
+          <ul class="navbar-nav justify-content-end">
+            <% if user_signed_in? %>
+            <p class="navbar-text">Signed in as <%= current_user.name %> (<%= User::ROLES[current_user.role.to_i].to_s.titleize %>).</p>
+            <li class="nav-item">
+              <%= link_to "Dashboard", current_user_dashboard, class: "btn btn-link" %>
+            </li>
+            <li class="nav-item">
+              <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-link" %>
+            </li>
+            <% else %>
+            <li class="nav-item">
+              <%= link_to "Sign up", new_user_registration_path, class: "btn btn-link" %>
+            </li>
+            <span class="navbar-text">or</span>
+            <li class="nav-item">
+              <%= link_to "sign in", new_user_session_path, class: "btn btn-link" %>
+            </li>
+            <% end %>
+          </ul>
+      </div>
+    </nav>
+    <% if notice %>
+     <p class="alert alert-success"><%= notice %></p>
+    <% end %>
+    <% if alert %>
+      <% flash.each do |key, value| %>
+            <div class="alert alert-danger"><%= value %></div>
+      <% end %>
+    <% end %>
+    <div class="container-fluid pt-5">
+      <%= yield %>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+<h1>Edit Appointment</h1>
+<div class="container-sm">
+  <h2>Appointment to <%= @patient.name %></h2>
+
+  <%= form_for @appointment, local: false do |f| %>
+    <div class="mb-3">
+      <%= f.label :recomendations, class: "form-label" %><br />
+      <%= f.text_field :recomendations, autofocus: true, class: "form-control" %>
+    </div>
+    <div class="actions">
+      <%= f.submit "Change" %>
+    </div>
+  <% end %>
+
+
+<%= link_to 'Back', '/doctors/' + @appointment.doctor_id.to_s %>
+</div>
