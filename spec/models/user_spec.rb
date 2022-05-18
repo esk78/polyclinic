@@ -7,5 +7,3 @@ RSpec.describe User, :type => :model do
     should_not allow_value('+380-abcde').for(:phone)
   end
 end
-
-end

@@ -16,11 +16,11 @@ FactoryBot.define do
   factory :doctor do
     id {1}
     user_id {1}
-    doctor_category_id {100}
+    doctor_category_id {1}
   end
 
   factory :doctor_category do
-    id {100}
+    id {1}
     name {"Physician1"}
   end
 

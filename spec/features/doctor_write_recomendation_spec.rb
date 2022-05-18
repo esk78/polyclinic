@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "add recomendation", type: :feature do
   before :each do
+    FactoryBot.create(:doctor_category)
     patient = FactoryBot.create(:user, role: 1)
     FactoryBot.create(:patient)
     FactoryBot.create(:appointment_status)

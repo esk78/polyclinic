@@ -11,7 +11,7 @@ class DoctorsController < ApplicationController
     query = "SELECT a.id, u.name as p_name, a.appointment_date, aps.name as aps_name, a.recomendations
       FROM appointments a
       inner join appointment_statuses aps on a.appointment_status_id=aps.id
-      inner join patients p on a.doctor_id=p.id
+      inner join patients p on a.patient_id=p.id
       inner join users u on p.user_id=u.id
       WHERE a.doctor_id=?"
     @doctor_categories = DoctorCategory.all
