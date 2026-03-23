@@ -42,19 +42,19 @@ ActiveRecord::Schema.define(version: 2022_05_16_090702) do
   end
 
   create_table "doctors", force: :cascade do |t|
-    t.bigint "users_id", null: false
+    t.bigint "user_id", null: false
     t.bigint "doctor_category_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["doctor_category_id"], name: "index_doctors_on_doctor_category_id"
-    t.index ["users_id"], name: "index_doctors_on_users_id"
+    t.index ["user_id"], name: "index_doctors_on_user_id"
   end
 
   create_table "patients", force: :cascade do |t|
-    t.bigint "users_id", null: false
+    t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["users_id"], name: "index_patients_on_users_id"
+    t.index ["user_id"], name: "index_patients_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -76,6 +76,6 @@ ActiveRecord::Schema.define(version: 2022_05_16_090702) do
   add_foreign_key "appointments", "doctors"
   add_foreign_key "appointments", "patients"
   add_foreign_key "doctors", "doctor_categories"
-  add_foreign_key "doctors", "users", column: "users_id"
-  add_foreign_key "patients", "users", column: "users_id"
+  add_foreign_key "doctors", "users"
+  add_foreign_key "patients", "users"
 end
