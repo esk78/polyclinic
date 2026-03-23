@@ -1,10 +1,11 @@
-FROM ruby:3.0-slim
+FROM ruby:3.3-slim
 
 # Install system dependencies
 RUN apt-get update -qq && apt-get install -y \
     postgresql-client \
     build-essential \
     libpq-dev \
+    libyaml-dev \
     curl \
     git \
     nodejs \

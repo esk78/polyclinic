@@ -1,5 +1,15 @@
 class ApplicationController < ActionController::Base
+  include ApplicationHelper
+
   before_action :configure_permitted_parameters, if: :devise_controller?
+
+  def after_sign_in_path_for(resource)
+    current_user_dashboard
+  end
+
+  def after_sign_up_path_for(resource)
+    current_user_dashboard
+  end
 
   protected
 

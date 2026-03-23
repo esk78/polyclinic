@@ -10,25 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_16_090702) do
-
+ActiveRecord::Schema[8.0].define(version: 2026_03_23_115156) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
 
   create_table "appointment_statuses", force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "appointments", force: :cascade do |t|
-    t.datetime "appointment_date"
+    t.datetime "appointment_date", precision: nil
     t.bigint "doctor_id", null: false
     t.bigint "patient_id", null: false
     t.bigint "appointment_status_id", default: 1, null: false
     t.text "recomendations"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["appointment_status_id"], name: "index_appointments_on_appointment_status_id"
     t.index ["doctor_id"], name: "index_appointments_on_doctor_id"
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
@@ -36,24 +35,24 @@ ActiveRecord::Schema.define(version: 2022_05_16_090702) do
 
   create_table "doctor_categories", force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["name"], name: "unique_name", unique: true
   end
 
   create_table "doctors", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "doctor_category_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["doctor_category_id"], name: "index_doctors_on_doctor_category_id"
     t.index ["user_id"], name: "index_doctors_on_user_id"
   end
 
   create_table "patients", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_patients_on_user_id"
   end
 
@@ -64,10 +63,10 @@ ActiveRecord::Schema.define(version: 2022_05_16_090702) do
     t.integer "role", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "reset_password_sent_at", precision: nil
+    t.datetime "remember_created_at", precision: nil
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["phone"], name: "index_users_on_phone", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

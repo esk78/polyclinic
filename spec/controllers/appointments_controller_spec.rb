@@ -5,7 +5,7 @@ RSpec.describe AppointmentsController, type: :controller do
     login_patient
 
     let(:valid_attributes) {
-        {:appointment_date => "2022-05-26 15:55:00", :doctor_id => 1, :patient_id => 1, :appointment_status_id => 1, :recomendations => ""}
+        {:appointment_date => "2022-05-26 15:55:00", :doctor_id => Doctor.first.id, :patient_id => Patient.first.id, :appointment_status_id => AppointmentStatus.first.id, :recomendations => ""}
     }
 
     let(:valid_session) { {} }
