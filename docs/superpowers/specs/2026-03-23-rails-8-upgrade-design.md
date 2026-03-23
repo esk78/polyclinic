@@ -8,6 +8,7 @@ Upgrade the `polyclinic` project from Rails 6.1/Ruby 3.0 to Rails 8.0/Ruby 3.3, 
 - **Base Image:** `ruby:3.3-slim` for a lightweight and secure environment.
 - **Services:**
   - `app`: Rails application running on Puma.
+  - `worker`: Dedicated process for background jobs via `solid_queue`.
   - `db`: PostgreSQL 16+ as the primary data store.
 - **Orchestration:** `docker-compose.yml` for local development.
 - **Storage:** Managed volumes for PostgreSQL data.
@@ -16,29 +17,35 @@ Upgrade the `polyclinic` project from Rails 6.1/Ruby 3.0 to Rails 8.0/Ruby 3.3, 
 - **Background Jobs:** Move from default async/inline to `solid_queue`.
 - **Caching:** Transition to `solid_cache` using PostgreSQL.
 - **Action Cable:** Transition to `solid_cable` using PostgreSQL.
+- **Installation:** Run generators (`rails generate solid_queue:install`, etc.) during the Rails 8 phase.
 - **Benefit:** Simplifies infrastructure by removing Redis dependency.
 
 ## 3. Rails Upgrade Path
-### Phase 1: Rails 6.1 to 7.1
-- Update `Gemfile` to Rails 7.1.
-- Run `rails app:update` to handle configuration changes.
+### Phase 1: Rails 6.1 to 7.0/7.1
+- Update `Gemfile` to Rails 7.0, then 7.1.
+- Run `rails app:update` at each step to handle configuration changes.
 - Address deprecations and breaking changes in core gems (Devise, CanCanCan, Administrate).
 - Verify existing RSpec and system tests.
 
-### Phase 2: Rails 7.1 to 8.0
-- Update `Gemfile` to Rails 8.0.
+### Phase 2: Rails 7.1 to 7.2/8.0
+- Update `Gemfile` to Rails 7.2, then 8.0.
 - Run `rails app:update`.
 - Enable new Rails 8 defaults (Solid Stack, enhanced security headers, etc.).
 
-## 4. Frontend Migration
-- **Current State:** Webpacker 5.4.3 using `app/frontend`.
-- **Target State:** `importmap-rails` + `propshaft`.
+## 4. Frontend & Asset Migration
+- **Current State:** Webpacker 5.4.3 using `app/frontend` (JS + SCSS + Bootstrap).
+- **Target State:** `importmap-rails` + `propshaft` + `dartsass-rails`.
+- **CSS Strategy:**
+  - Use `dartsass-rails` to compile SCSS files.
+  - Migrate Bootstrap and Popper from Yarn to Importmaps (pinned via `bin/importmap`).
+  - Move SCSS files from `app/frontend` to `app/assets/stylesheets`.
 - **Migration Steps:**
   1. Remove `webpacker`, `node_modules`, `yarn.lock`, and `package.json`.
-  2. Install and configure `importmap-rails` and `propshaft-rails`.
-  3. Move JS assets from `app/frontend/packs` to `app/javascript`.
-  4. Update application layout to use `javascript_importmap_tags`.
-  5. Pin required JS libraries (Turbo, Stimulus) via `bin/importmap`.
+  2. Remove `sass-rails` and `sprockets-rails` (if replaced by Propshaft).
+  3. Install and configure `importmap-rails`, `propshaft-rails`, and `dartsass-rails`.
+  4. Move JS assets from `app/frontend/packs` to `app/javascript`.
+  5. Update application layout to use `javascript_importmap_tags` and `stylesheet_link_tag`.
+  6. Pin required JS libraries (Turbo, Stimulus, Bootstrap, Popper) via `bin/importmap`.
 
 ## 5. Data Flow & Components
 - **Persistence:** PostgreSQL handles all relational data + Queue/Cache/Cable state.
