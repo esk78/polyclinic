@@ -1,66 +1,66 @@
-# Специфікація: Додавання RSpec тестів до проекту Polyclinic
+# Specification: Adding RSpec Tests to the Polyclinic Project
 
-**Дата:** 2026-03-24  
-**Статус:** Чернетка (Очікує на фінальне схвалення)  
-**Ціль:** Забезпечити 100% покриття критичної бізнес-логіки та сценаріїв користувача за допомогою RSpec.
+**Date:** 2026-03-24  
+**Status:** Draft (Awaiting final approval)  
+**Goal:** Ensure 100% coverage of critical business logic and user scenarios using RSpec.
 
 ---
 
-## 1. Архітектура та інфраструктура тестування
+## 1. Architecture and Testing Infrastructure
 
-### 1.1. Рефакторинг фабрик (FactoryBot)
-*   **Розподіл по файлах**: Перемістити всі фабрики з `spec/factories/devise.rb` у відповідні файли:
+### 1.1. Factory Refactoring (FactoryBot)
+*   **File Distribution**: Move all factories from `spec/factories/devise.rb` to their respective files:
     *   `spec/factories/users.rb`
     *   `spec/factories/doctors.rb`
     *   `spec/factories/patients.rb`
     *   `spec/factories/doctor_categories.rb`
     *   `spec/factories/appointment_statuses.rb`
     *   `spec/factories/appointments.rb`
-*   **Динамічні дані**: Видалити жорстко задані `id { 1 }`. Використовувати `sequence` для унікальних полів (`email`, `phone`, `name`).
-*   **Трейт-система**: Додати трейти для ролей користувачів:
+*   **Dynamic Data**: Remove hardcoded `id { 1 }`. Use `sequence` for unique fields (`email`, `phone`, `name`).
+*   **Trait System**: Add traits for user roles:
     ```ruby
     trait :admin { role { 0 } }
     trait :doctor { role { 1 } }
     trait :patient { role { 2 } }
     ```
 
-### 1.2. Допоміжні методи (Support)
-*   Оновити `spec/support/controller_macros.rb` для підтримки логіну через Devise для різних ролей у тестах контролерів.
+### 1.2. Support Helpers
+*   Update `spec/support/controller_macros.rb` to support Devise login for different roles in controller/request tests.
 
 ---
 
-## 2. Тестування моделей та безпеки
+## 2. Model and Security Testing
 
-### 2.1. Моделі (ActiveRecord)
-*   **Validations**: Покрити всі `presence`, `uniqueness` та формати (телефон, email) за допомогою `shoulda-matchers`.
-*   **Associations**: Перевірити зв'язки `belongs_to`, `has_many` для всіх моделей (`User`, `Doctor`, `Patient`, `Appointment` тощо).
-*   **Scopes & Methods**: Протестувати будь-яку кастомну логіку в моделях (якщо така з'явиться).
+### 2.1. Models (ActiveRecord)
+*   **Validations**: Cover all `presence`, `uniqueness`, and formats (phone, email) using `shoulda-matchers`.
+*   **Associations**: Verify `belongs_to`, `has_many` relationships for all models (`User`, `Doctor`, `Patient`, `Appointment`, etc.).
+*   **Callbacks & Methods**: Explicitly test the `create_user_profiles` callback in `User.rb` and any other custom logic.
 
-### 2.2. Права доступу (CanCanCan)
-*   Створити `spec/models/ability_spec.rb`.
-*   **Тестові кейси**:
-    *   **Admin**: Доступ до всього (`manage :all`).
-    *   **Doctor**: Доступ до своїх пацієнтів, редагування рекомендацій у своїх прийомах. Заборона доступу до списку користувачів.
-    *   **Patient**: Перегляд власних прийомів, створення нових прийомів. Заборона редагування рекомендацій.
-
----
-
-## 3. Тестування взаємодії (Контролери та Системні тести)
-
-### 3.1. Контролери (Request Specs)
-*   **AppointmentsController**: Покрити CRUD операції (index, show, create, update). Перевірити, що пацієнт може створювати запис, а лікар — оновлювати його.
-*   **Admin Area**: Перевірити, що лише адмін має доступ до контролерів у просторі імен `Admin::`.
-*   **Redirections**: Перевірка перенаправлення неавторизованих користувачів на сторінку входу.
-
-### 3.2. Системні тести (Capybara / Feature Tests)
-*   **Сценарій "Шлях пацієнта"**: Реєстрація -> Вхід -> Вибір лікаря -> Запис на прийом -> Перевірка запису в кабінеті.
-*   **Сценарій "Робота лікаря"**: Вхід -> Перегляд списку пацієнтів -> Вибір прийому -> Додавання діагнозу -> Збереження.
-*   **Сценарій "Адміністрування"**: Створення нової категорії лікаря через адмін-панель.
+### 2.2. Permissions (CanCanCan)
+*   Create `spec/models/ability_spec.rb`.
+*   **Test Cases**:
+    *   **Admin**: Access to everything (`manage :all`).
+    *   **Doctor**: Access to their own patients, editing recommendations in their own appointments. Forbidden access to the user list.
+    *   **Patient**: Viewing own appointments, creating new appointments. Forbidden from editing recommendations.
 
 ---
 
-## 4. План впровадження (Черговість)
-1.  Рефакторинг фабрик та налаштування інфраструктури.
-2.  Написання тестів для моделей та `Ability`.
-3.  Покриття контролерів тестами запитів (Request specs).
-4.  Створення Feature-тестів для основних бізнес-процесів.
+## 3. Interaction Testing (Controllers and System Tests)
+
+### 3.1. Controllers (Request Specs)
+*   **AppointmentsController**: Cover CRUD operations (index, show, create, update). Verify that a patient can create an appointment and a doctor can update it.
+*   **Admin Area**: Verify that only admins have access to controllers within the `Admin::` namespace.
+*   **Redirections**: Check redirection of unauthorized users to the login page.
+
+### 3.2. System Tests (Capybara / System Specs)
+*   **Patient Workflow**: Registration -> Login -> Doctor Selection -> Appointment Creation -> Verify appointment in the dashboard.
+*   **Doctor Workflow**: Login -> View Patient List -> Select Appointment -> Add Diagnosis/Recommendations -> Save.
+*   **Administration Workflow**: Creating a new doctor category via the admin panel.
+
+---
+
+## 4. Implementation Plan (Order of Operations)
+1.  Refactor factories and set up infrastructure.
+2.  Write tests for models and `Ability`.
+3.  Cover controllers with Request specs.
+4.  Create System specs for core business processes.
