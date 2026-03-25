@@ -4,9 +4,20 @@ class Ability
   include CanCan::Ability
 
   def initialize(user)
-    can :update, Doctor if User::ROLES[user.role].to_s == "doctor"
-    can :update, Patient if User::ROLES[user.role].to_s == "patient"
-    can :manage, :all if User::ROLES[user.role].to_s == "admin"
+    user ||= User.new # guest user (not logged in)
+
+    case User::ROLES[user.role].to_s
+    when 'admin'
+      can :manage, :all
+    when 'doctor'
+      can :read, Appointment
+      can :update, Appointment, doctor_id: user.doctor&.id
+      can :update, Doctor, id: user.doctor&.id
+    when 'patient'
+      can :create, Appointment
+      can :read, Appointment, patient_id: user.patient&.id
+      can :update, Patient, id: user.patient&.id
+    end
 
     # Define abilities for the passed in user here. For example:
     #

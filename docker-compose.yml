@@ -38,8 +38,6 @@ services:
       - db
     volumes:
       - .:/app
-    command: >
-      bash -c "bundle exec rails db:test:prepare && bundle exec rspec"
 
 volumes:
   postgres_data:
