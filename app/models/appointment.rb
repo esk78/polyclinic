@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Appointment < ApplicationRecord
   belongs_to :doctor
   belongs_to :patient
@@ -7,19 +9,19 @@ class Appointment < ApplicationRecord
   validates :appointment_status_id, presence: true
 
   validate :allow_only_ten_appointments_per_doctor, on: :create
+  before_save :close_appointment_if_recommendation_given
 
+  private
 
-private
+  def close_appointment_if_recommendation_given
+    return unless recomendations.present? && recomendations_changed?
 
-  def change_status
-    if self.appointment_status_id?
-      self.appointment_status_id = 2
-    end
+    self.appointment_status_id = AppointmentStatus::CLOSED
   end
 
   def allow_only_ten_appointments_per_doctor
-    errors.add(:appointment, "No more than 10 appointments.") if Appointment.where( "doctor_id = ?", self.doctor_id ).count > 10
-    puts Appointment.where( "doctor_id = ?", self.doctor_id ).count
-  end
+    return unless Appointment.where(doctor_id: doctor_id, appointment_status_id: AppointmentStatus::OPEN).count >= 10
 
+    errors.add(:appointment, 'No more than 10 open appointments.')
+  end
 end

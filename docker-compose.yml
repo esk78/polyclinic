@@ -1,0 +1,43 @@
+services:
+  db:
+    image: postgres:16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user
+      POSTGRES_DB: polyclinic_development
+    ports:
+      - "5438:5432"
+
+  app:
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      RAILS_ENV: development
+      DB_HOST: db
+      DB_USERNAME: user
+      DB_PASSWORD: user
+      # Webpacker development server host
+      WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
+
+  tests:
+    build: .
+    environment:
+      RAILS_ENV: test
+      DB_HOST: db
+      DB_USERNAME: user
+      DB_PASSWORD: user
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+
+volumes:
+  postgres_data:

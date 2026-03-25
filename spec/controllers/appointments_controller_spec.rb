@@ -1,19 +1,30 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe AppointmentsController, type: :controller do
+  # Ensure dependencies exist
+  before do
+    DoctorCategory.find_or_create_by!(id: 1) { |c| c.name = 'General' }
+    AppointmentStatus.find_or_create_by!(id: 1) { |s| s.name = 'Opened' }
+  end
 
-    login_patient
+  login_patient
 
-    let(:valid_attributes) {
-        {:appointment_date => "2022-05-26 15:55:00", :doctor_id => 1, :patient_id => 1, :appointment_status_id => 1, :recomendations => ""}
+  let(:valid_attributes) do
+    {
+      appointment_date: '2022-05-26 15:55:00',
+      doctor_id: FactoryBot.create(:doctor).id,
+      patient_id: FactoryBot.create(:patient).id,
+      appointment_status_id: 1,
+      recomendations: ''
     }
+  end
 
-    let(:valid_session) { {} }
-
-    describe "Create appointment" do
-        it "returns a success response" do
-            Appointment.create! valid_attributes
-            expect(response).to be_successful # be_successful expects a HTTP Status code of 200
-        end
+  describe 'Create appointment' do
+    it 'returns a redirect response' do
+      post :create, params: { appointment: valid_attributes }
+      expect(response).to have_http_status(:redirect)
     end
+  end
 end

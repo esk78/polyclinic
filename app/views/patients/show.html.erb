@@ -12,7 +12,7 @@
     </div>
     <div class="tab-pane fade" id="v-pills-doctors" role="tabpanel" aria-labelledby="v-pills-doctors-tab">
       <div data-controller="doctors_search">
-        <%= form_with model: @patients, local: false do |f| %>
+        <%= form_with model: @patient, local: false do |f| %>
           <%= f.collection_select :doctor_category_id,
             DoctorCategory.all,
             :id,

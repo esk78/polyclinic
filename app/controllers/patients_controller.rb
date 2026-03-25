@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class PatientsController < ApplicationController
-  before_action :set_patient, only: %i[ show edit update destroy ]
+  before_action :set_patient, only: %i[show edit update destroy]
 
   # GET /patients or /patients.json
   def index
@@ -16,18 +18,24 @@ class PatientsController < ApplicationController
       inner join users u on d.user_id=u.id
       WHERE a.patient_id=?"
     @doctor_categories = DoctorCategory.all
-    @doctors_by_category = Doctor.select('users.name as u_name, doctor_categories.name as dc_name, doctors.id as d_id').joins(:doctor_category, :user).all
-    @appointments = Appointment.find_by_sql( [query, @patient.id] )
+    @doctors_by_category = Doctor.select('users.name as u_name, doctor_categories.name as dc_name, doctors.id as d_id').joins(
+      :doctor_category, :user
+    ).all
+    @appointments = Appointment.find_by_sql([query, @patient.id])
   end
 
   def doctors_search
     if params[:doctor_category_id].present?
-      @doctors_by_category = Doctor.select('users.name as u_name, doctor_categories.name as dc_name, doctors.id as d_id').joins(:doctor_category, :user).where("doctor_category_id = ?", params[ :doctor_category_id ])
+      @doctors_by_category = Doctor.select('users.name as u_name, doctor_categories.name as dc_name, doctors.id as d_id').joins(:doctor_category, :user).where(
+        'doctor_category_id = ?', params[:doctor_category_id]
+      )
     else
-      @doctors_by_category = Doctor.select('users.name as u_name, doctor_categories.name as dc_name, doctors.id as d_id').joins(:doctor_category, :user).all
+      @doctors_by_category = Doctor.select('users.name as u_name, doctor_categories.name as dc_name, doctors.id as d_id').joins(
+        :doctor_category, :user
+      ).all
     end
     respond_to do |format|
-      format.js {render layout: false} # Add this line to you respond_to block
+      format.js { render layout: false } # Add this line to you respond_to block
     end
   end
 
@@ -37,8 +45,7 @@ class PatientsController < ApplicationController
   end
 
   # GET /patients/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /patients or /patients.json
   def create
@@ -46,7 +53,7 @@ class PatientsController < ApplicationController
 
     respond_to do |format|
       if @patient.save
-        format.html { redirect_to patient_url(@patient), notice: "Patient was successfully created." }
+        format.html { redirect_to patient_url(@patient), notice: 'Patient was successfully created.' }
         format.json { render :show, status: :created, location: @patient }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -59,7 +66,7 @@ class PatientsController < ApplicationController
   def update
     respond_to do |format|
       if @patient.update(patient_params)
-        format.html { redirect_to patient_url(@patient), notice: "Patient was successfully updated." }
+        format.html { redirect_to patient_url(@patient), notice: 'Patient was successfully updated.' }
         format.json { render :show, status: :ok, location: @patient }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -73,19 +80,20 @@ class PatientsController < ApplicationController
     @patient.destroy
 
     respond_to do |format|
-      format.html { redirect_to patients_url, notice: "Patient was successfully destroyed." }
+      format.html { redirect_to patients_url, notice: 'Patient was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_patient
-      @patient = Patient.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def patient_params
-      params.fetch(:patient, {})
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_patient
+    @patient = Patient.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def patient_params
+    params.fetch(:patient, {})
+  end
 end

@@ -10,6 +10,11 @@ Rails.application.routes.draw do
       root to: "users#index"
     end
   get 'home/index'
+  
+  authenticated :user do
+    root to: "home#index", as: :user_root
+  end
+
   resources :patients
   resources :doctors
   resources :appointments
@@ -20,6 +25,10 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {
     sessions: 'users/sessions'
   }
+
+  # Resolve Devise "undefined method users_url" for both GET and POST
+  match 'users', to: 'home#index', via: [:get, :post], as: :users
+
   get 'doctors_search/:doctor_category_id' => 'patients#doctors_search'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 

@@ -5,11 +5,13 @@ module ApplicationHelper
       when 0
         admin_root_path
       when 1
-        @doctor = Doctor.find_by(user_id: current_user.id)
-        doctor_path(@doctor)
+        doctor = current_user.doctor
+        doctor ? doctor_path(doctor) : root_path
       when 2
-        @patient = Patient.find_by(user_id: current_user.id)
-        patient_path(@patient.id)
+        patient = current_user.patient
+        patient ? patient_path(patient) : root_path
+      else
+        root_path
       end
     else
       new_user_session_path

@@ -1,5 +1,11 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
-  ROLES = %i[admin doctor patient]
+  ROLE_ADMIN = 0
+  ROLE_DOCTOR = 1
+  ROLE_PATIENT = 2
+
+  ROLES = %i[admin doctor patient].freeze
 
   after_create :create_user_profiles
   # Include default devise modules. Others available are:
@@ -7,30 +13,33 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-   validates :phone, uniqueness: true, format: { with: /\A(?:\+?\d{1,3}\s*-?)?\(?(?:\d{2,3})?\)?[- ]?\d{3}[- ]?\d{4}\z/,
-                              message: 'Wrong phone number format'}
+  has_one :doctor, dependent: :destroy
+  has_one :patient, dependent: :destroy
 
-   def email_required?
-     false
-   end
+  validates :phone, uniqueness: true, format: { with: /\A(?:\+?\d{1,3}\s*-?)?\(?(?:\d{2,3})?\)?[- ]?\d{3}[- ]?\d{4}\z/,
 
-   def email_changed?
-     false
-   end
+                                                message: 'Wrong phone number format' }
 
-   def create_user_profiles
-     case role
-     when 0
-       #Admin
-     when 1
-       Doctor.create!( user_id: id, doctor_category_id: 1 )
-       # redirect_to root_path
-     when 2
-       Patient.create!( user_id: id )
-     else
-       #Exception
-       raise Exception.new "Error Role"
-     end
-   end
+  def email_required?
+    false
+  end
 
+  def email_changed?
+    false
+  end
+
+  def create_user_profiles
+    case role
+    when ROLE_ADMIN
+      # Admin
+    when ROLE_DOCTOR
+      Doctor.create!(user_id: id, doctor_category_id: 1)
+      # redirect_to root_path
+    when ROLE_PATIENT
+      Patient.create!(user_id: id)
+    else
+      # Exception
+      raise StandardError, 'Error Role'
+    end
+  end
 end
