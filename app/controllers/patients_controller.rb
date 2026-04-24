@@ -10,32 +10,23 @@ class PatientsController < ApplicationController
 
   # GET /patients/1 or /patients/1.json
   def show
-    query = "SELECT u.name as d_name, dc.name as dc_name, a.appointment_date, aps.name as aps_name, a.recomendations
-      FROM appointments a
-      inner join appointment_statuses aps on a.appointment_status_id=aps.id
-      inner join doctors d on a.doctor_id=d.id
-      inner join doctor_categories dc on d.doctor_category_id=dc.id
-      inner join users u on d.user_id=u.id
-      WHERE a.patient_id=?"
     @doctor_categories = DoctorCategory.all
     @doctors_by_category = Doctor.select('users.name as u_name, doctor_categories.name as dc_name, doctors.id as d_id').joins(
       :doctor_category, :user
     ).all
-    @appointments = Appointment.find_by_sql([query, @patient.id])
+    @appointments = AppointmentQueries.for_patient(@patient.id)
   end
 
   def doctors_search
     if params[:doctor_category_id].present?
-      @doctors_by_category = Doctor.select('users.name as u_name, doctor_categories.name as dc_name, doctors.id as d_id').joins(:doctor_category, :user).where(
+      @doctors_by_category = Doctor.with_user.with_category.where(
         'doctor_category_id = ?', params[:doctor_category_id]
       )
     else
-      @doctors_by_category = Doctor.select('users.name as u_name, doctor_categories.name as dc_name, doctors.id as d_id').joins(
-        :doctor_category, :user
-      ).all
+      @doctors_by_category = Doctor.with_user.with_category.all
     end
     respond_to do |format|
-      format.js { render layout: false } # Add this line to you respond_to block
+      format.js { render layout: false }
     end
   end
 
