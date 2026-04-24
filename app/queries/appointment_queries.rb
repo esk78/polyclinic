@@ -3,24 +3,28 @@
 class AppointmentQueries
   def self.for_patient(patient_id)
     Appointment.select(
-      'users.name as doctor_name',
-      'doctor_categories.name as category_name',
+      'users.name as d_name',
+      'doctor_categories.name as dc_name',
       'appointments.appointment_date',
-      'appointment_statuses.name as status_name',
+      'appointment_statuses.name as aps_name',
       'appointments.recomendations'
     )
-    .joins(doctor: [{ user: :doctor_category }, :appointment_status])
+    .joins(:doctor, :appointment_status)
+    .joins('INNER JOIN users ON doctors.user_id = users.id')
+    .joins('INNER JOIN doctor_categories ON doctors.doctor_category_id = doctor_categories.id')
     .where(patient_id: patient_id)
   end
 
   def self.for_doctor(doctor_id)
     Appointment.select(
-      'users.name as patient_name',
-      'appointment_statuses.name as status_name',
+      'users.name as p_name',
+      'appointment_statuses.name as aps_name',
       'appointments.appointment_date',
-      'appointments.recomendations'
+      'appointments.recomendations',
+      'appointments.id as id'
     )
-    .joins(patient: [{ user: :appointment_status }])
+    .joins(:patient, :appointment_status)
+    .joins('INNER JOIN users ON patients.user_id = users.id')
     .where(doctor_id: doctor_id)
   end
 end
