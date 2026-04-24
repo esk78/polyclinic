@@ -8,4 +8,7 @@ class Doctor < ApplicationRecord
 
   delegate :phone, to: :user, prefix: false, allow_nil: true
   alias phone_number phone
+
+  scope :with_user, -> { includes(:user) }
+  scope :with_category, -> { includes(:doctor_category) }
 end
