@@ -94,6 +94,6 @@ class PatientsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def patient_params
-    params.fetch(:patient, {})
+    params.require(:patient).permit(:user_id, :address)
   end
 end
